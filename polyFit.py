@@ -1,3 +1,4 @@
+from time import time
 from numpy import  matmul
 from numpy.linalg import inv as invert
 
@@ -37,3 +38,6 @@ def polyFit(data,degree):
     xOnly=list(map(lambda x:x[0],data))
 
     return 0, matmul(regressVector(data,degree),invert(regressMatrix(xOnly,degree)))
+
+data= [(1, 3),(2, 7), (3, 5), (4, 9), (5, 11), (6, 12), (7, 15)]
+print(polyFit(data,1)[1])
