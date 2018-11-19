@@ -48,14 +48,28 @@ def pointsInCluster(points,cent,distance,distanceFunction):
     return list(filter(lambda point: distanceFunction(point,cent)<=distance,points))
 
 def optimizeCentroids(points,centroids,distance,distanceFunction):
-    if not isValidPointSet(points) or not isValidPointSet(centroids):
+    res=[]
+    updated=False
+    for cent in centroids:
+        newCent=centroid(pointsInCluster(points,cent,distance,distanceFunction))
+        if newCent!=cent:
+            updated=True
+        res.append(centroid(pointsInCluster(points,cent,distance,distanceFunction)))
+
+    return updated,res
+
+def cluster(points,seeds,distance,distanceFunction,n=None):
+    if not isValidPointSet(points) or not isValidPointSet(seeds):
         return None
-    if len(points[0])!=len(centroids[0]):
+    if len(points[0])!=len(seeds[0]):
         return None
 
     res=[]
-    for cent in centroids:
-        res.append(centroid(pointsInCluster(points,cent,distance,distanceFunction)))
-
-    return res
-
+    i=0
+    while n is None or i<n:
+        i+=1
+        updated,seeds=optimizeCentroids(points,seeds,distance,distanceFunction)
+        print(i)
+        if not updated:
+            break
+    return seeds
