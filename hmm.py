@@ -43,6 +43,7 @@ class HiddenMarkovModel:
         if initialProbability is None:
             initialProbability=self._I_
         if len(tSequence)!=len(eSequece) or len(initialProbability)!=len(self._T_):
+            print(initialProbability)
             return None
 
         res=1
@@ -66,9 +67,13 @@ class HiddenMarkovModel:
         res=None
         for tSequence in cartProd(list(range(0,len(self._I_))),repeat=len(eSequence)):
             p=self.probOfEmissionAndTransitions(tSequence,eSequence,initialProbability)
-            if p>maxProd:
-                maxProd=p
-                res=tSequence
+            try:
+                if p>maxProd:
+                    maxProd=p
+                    res=tSequence
+            except:
+                print(p,maxProd)
+                exit()
 
         return res , self.probOfSequenceGivenEmission(res,eSequence,initialProbability)
 

@@ -17,6 +17,7 @@ class polynomial:
         for p,a in enumerate(self.A):
             res+=a*(x**p)
         return res
+
 def sum2Power(data,power):
     if power==0:
         return len(data)
