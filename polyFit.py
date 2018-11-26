@@ -53,4 +53,4 @@ def polyFit(data,degree):
         return 2, None
     xOnly=list(map(lambda x:x[0],data))
 
-    return 0, (polynomial(matmul(regressVector(data,degree),invert(regressMatrix(xOnly,degree)))))
+    return None, (polynomial(matmul(regressVector(data,degree),invert(regressMatrix(xOnly,degree)))))

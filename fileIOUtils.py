@@ -31,6 +31,12 @@ def matrixFromDump(dump,topLeft,botRight):
     except:
         return None
 
+def loadDimentionalPoints(path):
+    return list(map(lambda l:tuple(l),CSVLoad(path)))
+
+def saveDimentionalPoints(data,path):
+    CSVSave(list(map(lambda t:list(t),data)),path)
+
 def CSVLoad(path):
     res=[]
     with open(path,mode='r') as file:
