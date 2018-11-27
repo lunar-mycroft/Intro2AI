@@ -27,5 +27,5 @@ if error is not None:
     exit()
 
 print("The fit is f(x)="+str(res))
-if "-x" not in opts:
-    print("f("+str(res)+")="+str(res(float(opts["-x"][0]))))
+if "-x" in opts:
+    print("f("+opts["-x"][0]+")="+str(round(res(float(opts["-x"][0])),3)))
