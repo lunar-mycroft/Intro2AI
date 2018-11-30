@@ -1,3 +1,15 @@
+from math import sqrt
+
+def euclidianDistance(vec1,vec2):
+    if len(vec1)!=len(vec2):
+        return None
+    return sqrt(sum((x1-x2)**2 for x1,x2 in zip(vec1,vec2)))
+
+def manhattenDistance(vec1,vec2):
+    if len(vec1)!=len(vec2):
+        return None
+    return sum(abs(x1-x2) for x1,x2 in zip(vec1,vec2))
+
 def isValidPoint(point,length=None):
     if not isinstance(point,tuple):
         return False
@@ -27,10 +39,7 @@ def centroid(points):
     if not isValidPointSet(points):
         return None
 
-    res=[]
-    for axis in points[0]:
-        res.append(0)
-
+    res=[0 for element in points[0]]
     n=len(points);
 
     for point in points:
@@ -69,7 +78,15 @@ def cluster(points,seeds,distance,distanceFunction,n=None):
     while n is None or i<n:
         i+=1
         updated,seeds=optimizeCentroids(points,seeds,distance,distanceFunction)
-        print(i)
         if not updated:
             break
     return seeds
+
+def pointInAnyCluster(point,centroids,distance,distanceFunction):
+    for cent in centroids:
+        if distanceFunction(cent,point)<=distance:
+            return True
+    return False
+
+def outliers(points,centroids,distance,distanceFunction):
+    return list(filter(lambda point: not pointInAnyCluster(point,centroids,distance,distanceFunction),points))
