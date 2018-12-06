@@ -1,8 +1,12 @@
-from numpy import array, ones,zeros, matmul, subtract
-from math import exp, sqrt
+from numpy import array, ones,zeros, matmul
+from random import uniform
+
 from printingUtils import matrixString
 
-round1000=lambda x: float(int(x*1000+0.5)/1000)
+from math import sqrt
+
+def errorFunc(goal,actual):
+    return sqrt(sum(map(lambda g,a:(g-a)**2,goal,actual)))
 
 class NNLayer:
     def __init__(self,nNodesPrev,nNodes,activation,dSigmadZ):
@@ -17,8 +21,22 @@ class NNLayer:
     def __str__(self):
         return "Weights:\n"+matrixString(self.weights)+"\nBiases:\n"+matrixString(self.biases)
 
+    def randomize(self,minVal=-1,maxVal=1):
+        n=self.nNext()
+        m=self.nPrev()
+
+        self.weights=array([[uniform(minVal,maxVal) for j in range(0,m)] for i in range(0,n)])
+        self.biases=array([uniform(minVal,maxVal) for i in range(0,n)])
+
+
     def Z(self,prev):
-        return matmul(self.weights,prev)+self.biases
+        try:
+            return matmul(self.weights,prev)+self.biases
+        except:
+            print(self.weights)
+            print(prev)
+            print(self.biases)
+            exit()
 
     def CommonDerivatives(self,nextCDs,prevActivations):
         Z=self.Z(prevActivations)
@@ -70,7 +88,7 @@ class NeuralNet:
         if n<=0:
             return
 
-        nPrev=self.nInputs if len(self.layers)==0 else self.layers[-1].nPrev()
+        nPrev=self.nInputs if len(self.layers)==0 else self.layers[-1].nNext()
         self.layers.append(NNLayer(nPrev,n,activation,dSigmadZ))
 
     def grad(self,I,T):
@@ -79,8 +97,6 @@ class NeuralNet:
         if not (isinstance(I,list) or isinstance(I,array)):
             return
         if not (isinstance(T,list) or isinstance(T,array)):
-            return
-        if len(I)!=len(T):
             return
 
         activations=[array(I)]
@@ -109,9 +125,9 @@ class NeuralNet:
     def trainingIteration(self,trainingData,trainingRate):
         alpha=trainingRate/len(trainingData)
         grad=None;
-        for example in trainintData:
+        for example in trainingData:
             newGrad =self.grad(example[0],example[1])
-            if grad==None:
+            if grad is None:
                 grad=newGrad
             else:
                 res=[]
@@ -122,11 +138,10 @@ class NeuralNet:
 
     def train(self,trainingData,trainingRate,n):
         for i in range(0,n):
-            print(i)
-            self.trainingIteration(trainintData,trainingRate)
+            self.trainingIteration(trainingData,trainingRate)
 
     def totalError(self,trainingData,costFunc):
-        return sum(map(lambda example: costFunc(self(example[0]),example[1]),trainintData))
+        return sum(map(lambda example: costFunc(self(example[0]),example[1]),trainingData))
 
     def __str__(self):
         res=''
@@ -144,44 +159,3 @@ class NeuralNet:
             output=layer(output)
 
         return output
-
-HWNet=NeuralNet(3)
-
-HWNet.addLayer(4,lambda x:1.5/(1+exp(-x)),lambda x :1.5*exp(-x)/((1+exp(-x))**2))
-HWNet.layers[-1].weights=array([
-    [-0.1,0,0],
-    [0.7,0.4,0],
-    [0,0.5,-0.3],
-    [0,0.9,-0.2]
-])
-HWNet.addLayer(3,lambda x:1.5/(1+exp(-x)),lambda x :1.5*exp(-x)/((1+exp(-x))**2))
-HWNet.layers[-1].weights=array([
-    [0.2,0.5,0,0],
-    [0.3,0.6,0,0],
-    [0,0.4,0.2,0.8]
-])
-
-trainintData=[
-    ([1,1,0],[1,0,1]),
-    ([1,0,1],[1,1,0]),
-    ([0,0,0],[0,0,0]),
-    ([0,1,0],[0,0,1])
-]
-
-def makeCostTable(tData):
-    s = 0
-    for i,scenario in enumerate(tData):
-        res=[]
-        for n in HWNet(scenario[0]):
-            res.append(round1000(n))
-        error=subtract(res,scenario[1])
-        errorScale=sqrt(matmul(error,error))
-        print('$'+str(i+1)+'$ &$'+str(tuple(scenario[0]))+'$ & $'+str(tuple(scenario[1]))+'$ & $'+str(tuple(res))+'$ & $'+str(round(errorScale,3))+'$\\\\')
-        print('\\hline')
-        s+=errorScale
-
-    print(round(s,4))
-
-HWNet.train(trainintData,0.1,228)
-HWNet.trainingIteration(trainintData,0.1)
-makeCostTable(trainintData)
