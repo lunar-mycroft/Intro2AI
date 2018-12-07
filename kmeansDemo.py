@@ -32,7 +32,13 @@ if opts["-distFunc"][0] not in ["e","m"]:
     exit()
 
 centIt=iter(opts["-centers"])
-centers = [(float(x),float(next(centIt))) for x in centIt]
+centers=[]
+try:
+    centers = [(float(x),float(next(centIt))) for x in centIt]
+except:
+    for string in opts["-centers"]:
+        centers.append((float(string.split(',')[0]),float(string.split(',')[1])))
+print(centers)
 points = [tuple(row) for row in CSVLoad(opts["-file"][0])]
 distFunc = euclidianDistance if opts["-distFunc"][0]=='e' else manhattenDistance
 maxDist = float(opts["-dist"][0])
