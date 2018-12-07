@@ -25,8 +25,8 @@ if not ('-file' in opts or ('-n_e' in opts and '-n_s' in opts)):
     print("You must enter either a file or a size")
     exit()
 
-noFile = '-file' in opts
-if noFile:
+noFile = '-file' not in opts
+if not noFile:
     noFile=len(opts['-file'])<=0
 if '-n_e' in opts: # and '-n_s' in opts (second check unneeded
     if len(opts['-n_e'])<=0 or len(opts['-n_s'])<=0:
@@ -35,7 +35,7 @@ if '-n_e' in opts: # and '-n_s' in opts (second check unneeded
 
 model=None
 if '-n_e' in opts:
-    print("gen")
+    print("Generating HMM")
     n_e=0
     n_s=0
     try:

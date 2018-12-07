@@ -13,7 +13,7 @@ if "-file" not in opts or len(opts["-file"])==0:
 if not isfile(opts["-file"][0]):
     print("Your file doesn't exist")
 
-degree=opts["-d"][0] if "-d" in opts else 1
+degree=int(opts["-d"][0] if "-d" in opts else 1)
 
 data=loadDimentionalPoints(opts["-file"][0])
 if len(data[0])!=2:

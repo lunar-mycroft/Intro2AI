@@ -19,7 +19,7 @@ def saveHMM(path,model):
     toSave=[[numStates,numEmissions]]
     toSave.extend(model._T_)
     toSave.extend(model._E_)
-    toSave.extend(model._I_)
+    toSave.append(model._I_)
     CSVSave(toSave,path)
 
 def matrixFromDump(dump,topLeft,botRight):
