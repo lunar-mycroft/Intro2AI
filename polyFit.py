@@ -2,6 +2,22 @@ from time import time
 from numpy import  matmul
 from numpy.linalg import inv as invert
 
+class polynomial:
+    def __init__(self,coeffs):
+        self.A=coeffs
+    def __str__(self):
+        res=""
+        for i,a in enumerate(reversed(self.A)):
+            p=len(self.A)-(i+1)
+            res+=str(round(a,3))+("x"+("^"+str(p) if p>1 else "") if p>0 else "")+"+"
+        return res[:-1]
+
+    def __call__(self, x):
+        res=0
+        for p,a in enumerate(self.A):
+            res+=a*(x**p)
+        return res
+
 def sum2Power(data,power):
     if power==0:
         return len(data)
@@ -32,12 +48,9 @@ def regressMatrix(data,degree):
 
 def polyFit(data,degree):
     if len(data)<degree:
-        return 1,None
+        return 1, None
     if len(data)<2*degree:
         return 2, None
     xOnly=list(map(lambda x:x[0],data))
 
-    return 0, matmul(regressVector(data,degree),invert(regressMatrix(xOnly,degree)))
-
-data= [(1, 3),(2, 7), (3, 5), (4, 9), (5, 11), (6, 12), (7, 15)]
-print(polyFit(data,1)[1])
+    return None, (polynomial(matmul(regressVector(data,degree),invert(regressMatrix(xOnly,degree)))))

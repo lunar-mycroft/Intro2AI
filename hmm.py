@@ -1,14 +1,14 @@
-from numpy import array, matmul
+from numpy import array, matmul,ndarray
 from numpy.linalg import matrix_power
 from itertools import product as cartProd
 
 class HiddenMarkovModel:
     def __init__(self,Transition,Emission,initialProb):
-        if not (isinstance(Transition,array) and isinstance(Emission,array) and isinstance(initialProb,array)):
+        if not (isinstance(Transition,ndarray) and isinstance(Emission,ndarray) and isinstance(initialProb,ndarray)):
             self._T_=None
             self._E_=None
             self._I_=None
-        if Transition.dimentions()[0]!=Emission.dimentions()[1]:
+        if len(Transition[0])!=len(Transition[1]) or len(Transition[0])!=len(Emission[0]):
             self._T_=None
             self._E_=None
             self._I_=None
@@ -20,7 +20,9 @@ class HiddenMarkovModel:
     def valid(self):
         return not (self._E_ is None or self._T_ is None)
 
-    def probAfter(self,initialProbs,numTransitions):
+    def probAfter(self,numTransitions,initialProbs=None):
+        if initialProbs is None:
+            initialProbs=self._I_
         if numTransitions==0:
             return initialProbs
 
@@ -40,7 +42,8 @@ class HiddenMarkovModel:
     def probOfEmissionAndTransitions(self,tSequence,eSequece,initialProbability=None):
         if initialProbability is None:
             initialProbability=self._I_
-        if len(tSequence)!=len(eSequece) or len(initialProbability!=len(self._T_)):
+        if len(tSequence)!=len(eSequece) or len(initialProbability)!=len(self._T_):
+            print(initialProbability)
             return None
 
         res=1
@@ -54,21 +57,25 @@ class HiddenMarkovModel:
     def probOfEmission(self,eSequence,initialProbability=None):
         if initialProbability is None:
             initialProbability=self._I_
-        res=1
-        for i,emission in enumerate(eSequence):
-            res*=matmul(emission,self.probAfter(initialProbability,i))[emission]
+        res=0
+        for possibility in cartProd(list(range(0,len(self._I_))),repeat=len(eSequence)):
+            res+=self.probOfEmissionAndTransitions(possibility,eSequence)
         return res
 
     def mostProbPath(self,eSequence,initialProbability=None):
         maxProd=0
         res=None
-        for tSequence in cartProd(list(range(0,len(self._I_))),len(eSequence)):
+        for tSequence in cartProd(list(range(0,len(self._I_))),repeat=len(eSequence)):
             p=self.probOfEmissionAndTransitions(tSequence,eSequence,initialProbability)
-            if p>maxProd:
-                maxProd=p
-                res=tSequence
+            try:
+                if p>maxProd:
+                    maxProd=p
+                    res=tSequence
+            except:
+                print(p,maxProd)
+                exit()
 
-        return res,self.probOfSequenceGivenEmission(res,eSequence,initialProbability)
+        return res , self.probOfSequenceGivenEmission(res,eSequence,initialProbability)
 
     def probOfSequenceGivenEmission(self,tSequence,eSequence,initialProbability):
         pEandT=self.probOfEmissionAndTransitions(tSequence,eSequence,initialProbability)

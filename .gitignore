@@ -6,3 +6,10 @@ sandbox.py
 sandbox.py
 .idea/workspace.xml
 .idea/workspace.xml
+*.pyc
+*.pyc
+*.pyc
+*.pyc
+*.xml
+__pycache__/hmm.cpython-35.pyc
+__pycache__/polyFit.cpython-35.pyc
