@@ -65,7 +65,8 @@ orgEr=net.totalError(testData,errorFunc)
 net.train(trainingData,0.1,1000)
 
 finalError=net.totalError(testData,errorFunc)
-print(orgEr,finalError)
+print("Initial error:", orgEr)
+print("Error after training:", finalError)
 
 
 for champRole in nonTrainingChamps:

@@ -67,6 +67,8 @@ class HiddenMarkovModel:
         res=None
         for tSequence in cartProd(list(range(0,len(self._I_))),repeat=len(eSequence)):
             p=self.probOfEmissionAndTransitions(tSequence,eSequence,initialProbability)
+            print("Trying ",tSequence)
+            print("P =",self.probOfSequenceGivenEmission(tSequence,eSequence,initialProbability))
             try:
                 if p>maxProd:
                     maxProd=p
